@@ -1,6 +1,12 @@
 package com.example.packmon.Model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "PokmenFave")
 public class Pokmen {
+    @PrimaryKey(autoGenerate = true)
+    public int id;
     private String name;
     private String url;
 

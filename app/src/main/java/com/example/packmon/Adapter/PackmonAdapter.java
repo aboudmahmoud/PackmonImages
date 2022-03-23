@@ -52,6 +52,12 @@ Pokmen pokmen = pokmenlist.get(position);
         return pokmenlist.size();
     }
 
+    public Pokmen getPokmenFromPesiont(int postion)
+    {
+        /*Pokmen pokmen = pokmenlist.get(postion);
+        return pokmen;*/
+        return pokmenlist.get(postion);
+    }
     class PockmonHolder extends RecyclerView.ViewHolder {
         private PackmoenItemBinding binding;
 

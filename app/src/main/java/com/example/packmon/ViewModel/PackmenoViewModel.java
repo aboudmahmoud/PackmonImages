@@ -2,6 +2,7 @@ package com.example.packmon.ViewModel;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -10,6 +11,7 @@ import com.example.packmon.Model.Pokmen;
 import com.example.packmon.Reprostory.Repostory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -23,6 +25,11 @@ public class PackmenoViewModel extends ViewModel {
 
     private Repostory repostory;
     MutableLiveData<ArrayList<Pokmen>> PokmenList = new MutableLiveData<>();
+    LiveData<List<Pokmen>> favList = null;
+
+    public LiveData<List<Pokmen>> getFavList() {
+        return favList;
+    }
 
     @Inject
     public PackmenoViewModel(Repostory repostory) {
@@ -40,12 +47,11 @@ public class PackmenoViewModel extends ViewModel {
                     @Override
                     public ArrayList<Pokmen> apply(PakmonResponse pakmonResponse) throws Throwable {
                         ArrayList<Pokmen> list = pakmonResponse.getResults();
-                        for (Pokmen pokmen :list)
-                        {
-                            String url=pokmen.getUrl();
-                            String[] pokmentIndex=url.split("/");
+                        for (Pokmen pokmen : list) {
+                            String url = pokmen.getUrl();
+                            String[] pokmentIndex = url.split("/");
                             pokmen.setUrl("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
-                                    +pokmentIndex[pokmentIndex.length-1]+".png");
+                                    + pokmentIndex[pokmentIndex.length - 1] + ".png");
 
                         }
                         return list;
@@ -53,6 +59,18 @@ public class PackmenoViewModel extends ViewModel {
 
                 }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pokmen -> PokmenList.setValue(pokmen)
-                        ,throwable -> Log.d("Aboud", "View model getPackmoens: "+throwable.getMessage()));
+                        , throwable -> Log.d("Aboud", "View model getPackmoens: " + throwable.getMessage()));
+    }
+
+    public void insertPackmones(Pokmen pokmen) {
+        repostory.InsertPakmon(pokmen);
+    }
+
+    public void DeletPoakomens(Pokmen pokmen) {
+        repostory.DeletePokmon(pokmen);
+    }
+
+    public void getFavPackmoens() {
+        favList = repostory.getFavePackmont();
     }
 }

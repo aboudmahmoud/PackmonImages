@@ -3,7 +3,6 @@ package com.example.packmon;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,45 +15,45 @@ import android.widget.Toast;
 import com.example.packmon.Adapter.PackmonAdapter;
 import com.example.packmon.Model.Pokmen;
 import com.example.packmon.ViewModel.PackmenoViewModel;
-import com.example.packmon.databinding.ActivityMainBinding;
+import com.example.packmon.databinding.ActivityFaverotPageBinding;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class MainActivity extends AppCompatActivity {
-ActivityMainBinding binding;
-private PackmenoViewModel viewModel;
-private PackmonAdapter adapter;
-   static int[] FaveAdded;
+public class FaverotPage extends AppCompatActivity {
+ActivityFaverotPageBinding binding;
+    private PackmenoViewModel viewModel;
+    private PackmonAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding= ActivityMainBinding.inflate(getLayoutInflater());
+        binding=ActivityFaverotPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         adapter =new PackmonAdapter(this);
-        binding.Rv.setAdapter(adapter);
+        binding.Rv2.setAdapter(adapter);
         setupSwipe();
-        binding.gtofv.setOnClickListener(new View.OnClickListener() {
+        binding.gtohome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,FaverotPage.class));
+              startActivity(new Intent(FaverotPage.this,MainActivity.class));
                 finish();
             }
         });
-        viewModel = new ViewModelProvider(this).get(PackmenoViewModel.class);
-        viewModel.getPackmoens();
 
-        viewModel.getPokmenList().observe(this, new Observer<ArrayList<Pokmen>>() {
+        viewModel = new ViewModelProvider(this).get(PackmenoViewModel.class);
+        viewModel.getFavPackmoens();
+
+        viewModel.getFavList().observe(this, new Observer<List<Pokmen>>() {
             @Override
-            public void onChanged(ArrayList<Pokmen> pokmen) {
-                adapter.setPokmenlist(pokmen);
-                FaveAdded = new int[adapter.getItemCount()];
+            public void onChanged(List<Pokmen> pokmen) {
+                adapter.setPokmenlist((ArrayList<Pokmen>) pokmen);
             }
         });
-
     }
+
 
     private void setupSwipe()
     {
@@ -67,23 +66,14 @@ private PackmonAdapter adapter;
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int SwipedPokmenPostion=viewHolder.getAdapterPosition();
-               if (FaveAdded[SwipedPokmenPostion]!=1)
-               {
-                   FaveAdded[SwipedPokmenPostion]=1;
-                   Pokmen pokmen = adapter.getPokmenFromPesiont(SwipedPokmenPostion);
-                   viewModel.insertPackmones(pokmen);
-                   adapter.notifyDataSetChanged();
-
-                   Toast.makeText(MainActivity.this, "Added to Faverot", Toast.LENGTH_SHORT).show();
-               }
-               else {
-                   adapter.notifyDataSetChanged();
-                   Toast.makeText(MainActivity.this, "This Item hase been Added", Toast.LENGTH_SHORT).show();
-               }
-
+                Pokmen pokmen = adapter.getPokmenFromPesiont(SwipedPokmenPostion);
+                viewModel.DeletPoakomens(pokmen);
+                adapter.notifyItemRemoved(SwipedPokmenPostion);
+                Toast.makeText(FaverotPage.this, "Deleted", Toast.LENGTH_SHORT).show();
             }
         };
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
-        itemTouchHelper.attachToRecyclerView(binding.Rv);
+        itemTouchHelper.attachToRecyclerView(binding.Rv2);
+
     }
 }
